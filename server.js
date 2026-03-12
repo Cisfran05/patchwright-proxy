@@ -204,7 +204,8 @@ app.get("/api/*", async (req, res) => {
   const page = await getPage();
   
   await page.goto("about:blank");
-  await page.unroute("**/*");
+  //await page.unroute("**/*");
+  await page.unroute("**/*").catch(()=>{});
   
   let mainHTML = "";
 
@@ -302,7 +303,9 @@ app.get("/api/*", async (req, res) => {
 	console.log("STATUS:", response?.status());
 	
 	await page.waitForTimeout(3000);
-	
+
+	await page.waitForLoadState("networkidle").catch(()=>{});
+	  
 	const title = await page.title();
 	console.log("PAGE TITLE:", title);
 	
@@ -323,7 +326,7 @@ app.get("/api/*", async (req, res) => {
     
 	//Render
     //await page.close();
-	releasePage(page);
+	//releasePage(page);
 
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Content-Type", "text/html");
@@ -336,11 +339,15 @@ app.get("/api/*", async (req, res) => {
     
 	//Render
     //await page.close();
-	releasePage(page);
+	//releasePage(page);
 
     res.sendStatus(500);
 
-  }
+  } finally {
+
+  releasePage(page);
+
+}
 
 });
 
@@ -370,5 +377,6 @@ app.listen(PORT, () => {
 
 
 });
+
 
 
