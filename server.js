@@ -301,6 +301,7 @@ app.get("/api/*", async (req, res) => {
 	});
 	
 	console.log("STATUS:", response?.status());
+	console.log("FINAL URL:", page.url());
 	
 	await page.waitForTimeout(3000);
 
@@ -308,11 +309,13 @@ app.get("/api/*", async (req, res) => {
 	  
 	const title = await page.title();
 	console.log("PAGE TITLE:", title);
-	
-	await page.waitForFunction(() => {
-	  return document.body && document.body.innerHTML.length > 1000;
-	}, { timeout: 15000 });
-	
+
+    if (response && response.status() === 200) {
+	  await page.waitForFunction(() => {
+	    return document.body && document.body.innerHTML.length > 500;
+	  }, { timeout: 15000 }).catch(() => {});
+	}
+	  
 	await page.waitForSelector("form", { timeout: 15000 }).catch(() => {});
 	
     //
@@ -377,6 +380,7 @@ app.listen(PORT, () => {
 
 
 });
+
 
 
 
