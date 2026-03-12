@@ -38,18 +38,18 @@ const pagePool = [];
 (async () => {
 
   browser = await chromium.launch({
-    headless: true,
+    headless: false,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-background-timer-throttling",
-      "--disable-backgrounding-occluded-windows"
+      "--disable-dev-shm-usage"
     ]
   });
-
+	
   context = await browser.newContext({
     viewport: null,
+    locale: "en-US",
+    timezoneId: "America/New_York",
     userAgent:
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
   });
@@ -295,6 +295,11 @@ app.get("/api/*", async (req, res) => {
 	  waitUntil: "commit",
 	  timeout: 30000
 	});*/
+
+    await page.setExtraHTTPHeaders({
+	  "accept-language": "en-US,en;q=0.9"
+	});
+
 	const response = await page.goto(targetUrl, {
 	  waitUntil: "domcontentloaded",
 	  timeout: 60000
@@ -326,7 +331,8 @@ app.get("/api/*", async (req, res) => {
 	//Render
 	//const html = mainHTML;
 	const html = mainHTML || await page.content();
-    
+    console.log("HTML length:", html.length);
+	  
 	//Render
     //await page.close();
 	//releasePage(page);
@@ -380,6 +386,7 @@ app.listen(PORT, () => {
 
 
 });
+
 
 
 
