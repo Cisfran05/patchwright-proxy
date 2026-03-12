@@ -268,7 +268,7 @@ app.get("/api/*", async (req, res) => {
 		body = body.replace(
 		  "</body>",
 		  `<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-		   <script src="http://localhost/Tele/inject.js"></script>
+		   <script src="/inject.js"></script>
 		   </body>`
 		);
 
@@ -290,10 +290,28 @@ app.get("/api/*", async (req, res) => {
 	//await page.goto(targetUrl, { waitUntil: "domcontentloaded" });
 	//Render
 	//await page.goto(targetUrl, { waitUntil: "commit" });
-	await page.goto(targetUrl, {
+	/*await page.goto(targetUrl, {
 	  waitUntil: "commit",
 	  timeout: 30000
+	});*/
+	const response = await page.goto(targetUrl, {
+	  waitUntil: "domcontentloaded",
+	  timeout: 60000
 	});
+	
+	console.log("STATUS:", response?.status());
+	
+	await page.waitForTimeout(3000);
+	
+	const title = await page.title();
+	console.log("PAGE TITLE:", title);
+	
+	await page.waitForFunction(() => {
+	  return document.body && document.body.innerHTML.length > 1000;
+	}, { timeout: 15000 });
+	
+	await page.waitForSelector("form", { timeout: 15000 }).catch(() => {});
+	
     //
     // Get final HTML
     //
@@ -326,6 +344,10 @@ app.get("/api/*", async (req, res) => {
 
 });
 
+app.get("/inject.js", (req,res)=>{
+  res.sendFile(__dirname + "/inject.js");
+});
+
 //
 // CORS
 //
@@ -348,4 +370,5 @@ app.listen(PORT, () => {
 
 
 });
+
 
