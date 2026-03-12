@@ -1,15 +1,14 @@
-FROM mcr.microsoft.com/playwright:v1.58.2-jammy
+FROM mcr.microsoft.com/playwright:v1.42.0-jammy
 
 WORKDIR /app
 
 COPY package*.json ./
-
-RUN npm install --omit=dev
-
-RUN npx playwright install --with-deps
+RUN npm install
 
 COPY . .
 
+RUN apt-get update && apt-get install -y xvfb
+
 EXPOSE 10000
 
-CMD ["node", "server.js"]
+CMD ["xvfb-run", "--auto-servernum", "--server-args=-screen 0 1920x1080x24", "node", "server.js"]
