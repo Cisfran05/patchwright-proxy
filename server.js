@@ -39,6 +39,7 @@ const pagePool = [];
 
   browser = await chromium.launch({
     headless: true,
+    executablePath: "/ms-playwright/chromium-1208/chrome-linux/chrome",
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -345,5 +346,6 @@ app.options("/api/*", (req, res) => {
 app.listen(PORT, () => {
 
   console.log(`Proxy running: http://localhost:${PORT}`);
+
 
 });
