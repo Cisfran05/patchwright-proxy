@@ -12,7 +12,7 @@ let browser;
 let context;
 
 //Render
-const PAGE_POOL_SIZE = 5;
+const PAGE_POOL_SIZE = 2;
 const pagePool = [];
 
 //
@@ -383,7 +383,7 @@ app.options("/api/*", (req, res) => {
 //
 // Start server
 //
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, "0.0.0.0", async () => {
 
   console.log(`Proxy running on port ${PORT}`);
@@ -399,6 +399,7 @@ app.listen(PORT, "0.0.0.0", async () => {
 /*app.listen(PORT, "0.0.0.0", () => {
   console.log(`Proxy running on port ${PORT}`);
 });*/
+
 
 
 
