@@ -22,16 +22,22 @@ const pagePool = [];
 async function startBrowser() {
 
   browser = await chromium.launch({
-    headless: false,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-gpu",
-      "--single-process",
-      "--no-zygote"
-    ]
-  });
+	  headless: true,      // Playwright uses new headless mode by default
+	  args: [
+	    "--no-sandbox",
+	    "--disable-setuid-sandbox",
+	    "--disable-dev-shm-usage",
+	    "--disable-gpu",
+	    "--single-process",
+	    "--no-zygote",
+	    // Stealth flags to avoid detection
+	    "--disable-blink-features=AutomationControlled",
+	    "--disable-features=IsolateOrigins,site-per-process",
+	    "--disable-web-security",           // optional, may help with some sites
+	    "--disable-features=BlockInsecurePrivateNetworkRequests",
+	    "--disable-features=OutOfBlinkCors"
+	  ]
+	});
 
   context = await browser.newContext({
     viewport: null,
@@ -399,6 +405,7 @@ app.listen(PORT, "0.0.0.0", async () => {
 /*app.listen(PORT, "0.0.0.0", () => {
   console.log(`Proxy running on port ${PORT}`);
 });*/
+
 
 
 
