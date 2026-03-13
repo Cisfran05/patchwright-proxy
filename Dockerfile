@@ -12,4 +12,6 @@ RUN apt-get update && \
 
 EXPOSE 10000
 
-CMD ["xvfb-run","--auto-servernum","--server-args=-screen 0 1920x1080x24","node","server.js"]
+CMD ["node", "-e", "const http=require('http');http.createServer((req,res)=>res.end('ok')).listen(process.env.PORT||10000,'0.0.0.0',()=>console.log('Listening'))"]
+
+
