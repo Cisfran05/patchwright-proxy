@@ -18,35 +18,21 @@ const pagePool = [];
 //
 // Launch browser once
 //
-/* (async () => {
-  //Render
-  browser = await chromium.launch({
-    channel: "chrome",
-    headless: true
-  });
 
-  context = await browser.newContext({
-    viewport: null,
-    userAgent:
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
-  });
-
-  console.log("Browser started");
-
-})(); */
-
-(async () => {
+async function startBrowser() {
 
   browser = await chromium.launch({
     headless: false,
-	args: [
-	  "--no-sandbox",
-	  "--disable-setuid-sandbox",
-	  "--disable-dev-shm-usage",
-	  "--disable-gpu"
-	]
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--single-process",
+      "--no-zygote"
+    ]
   });
-	
+
   context = await browser.newContext({
     viewport: null,
     locale: "en-US",
@@ -55,17 +41,20 @@ const pagePool = [];
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
   });
 
-  // create page pool
   for (let i = 0; i < PAGE_POOL_SIZE; i++) {
-	const page = await context.newPage();
-	pagePool.push(page);
+    const page = await context.newPage();
+    pagePool.push(page);
   }
 
   console.log("Browser + page pool started");
 
-})();
+}
 
 async function getPage() {
+
+  if (!browser) {
+    throw new Error("Browser not ready");
+  }
 
   while (pagePool.length === 0) {
     await new Promise(r => setTimeout(r, 50));
@@ -74,6 +63,16 @@ async function getPage() {
   return pagePool.pop();
 
 }
+
+/*async function getPage() {
+
+  while (pagePool.length === 0) {
+    await new Promise(r => setTimeout(r, 50));
+  }
+
+  return pagePool.pop();
+
+}*/
 
 function releasePage(page) {
 
@@ -202,6 +201,9 @@ app.get("/api/*", async (req, res) => {
 
   //Render
   //const page = await context.newPage();
+  if (!browser) {
+    return res.status(503).send("Browser starting, try again in a moment");
+  }
   const page = await getPage();
   
   await page.goto("about:blank");
@@ -382,16 +384,23 @@ app.options("/api/*", (req, res) => {
 // Start server
 //
 const PORT = process.env.PORT || 4000;
+app.listen(PORT, "0.0.0.0", async () => {
 
-app.listen(PORT, "0.0.0.0", () => {
   console.log(`Proxy running on port ${PORT}`);
+
+  try {
+    await startBrowser();
+  } catch (err) {
+    console.error("Browser startup failed:", err);
+  }
+
 });
-/*app.listen(PORT, () => {
 
-  console.log(`Proxy running: http://localhost:${PORT}`);
-
-
+/*app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Proxy running on port ${PORT}`);
 });*/
+
+
 
 
 
