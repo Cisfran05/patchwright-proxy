@@ -39,11 +39,12 @@ const pagePool = [];
 
   browser = await chromium.launch({
     headless: false,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage"
-    ]
+	args: [
+	  "--no-sandbox",
+	  "--disable-setuid-sandbox",
+	  "--disable-dev-shm-usage",
+	  "--disable-gpu"
+	]
   });
 	
   context = await browser.newContext({
@@ -386,6 +387,7 @@ app.listen(PORT, () => {
 
 
 });
+
 
 
 
