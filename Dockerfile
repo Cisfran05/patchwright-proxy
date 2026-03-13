@@ -5,13 +5,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-COPY . .
+# Install Chromium and its dependencies
+RUN npx patchright install chromium
+RUN npx patchright install-deps
 
-RUN apt-get update && \
-    apt-get install -y xvfb
+COPY . .
 
 EXPOSE 10000
 
-CMD ["node", "-e", "const http=require('http');http.createServer((req,res)=>res.end('ok')).listen(process.env.PORT||10000,'0.0.0.0',()=>console.log('Listening'))"]
-
-
+CMD ["node", "server.js"]
