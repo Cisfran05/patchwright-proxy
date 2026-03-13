@@ -6,7 +6,7 @@ const crypto = require("crypto");
 const app = express();
 //Render
 //const PORT = 3000;
-const PORT = process.env.PORT || 3000;
+//const PORT = process.env.PORT || 3000;
 
 let browser;
 let context;
@@ -381,12 +381,19 @@ app.options("/api/*", (req, res) => {
 //
 // Start server
 //
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Proxy running on port ${PORT}`);
+});
+/*app.listen(PORT, () => {
 
   console.log(`Proxy running: http://localhost:${PORT}`);
 
 
-});
+});*/
+
+
 
 
 
